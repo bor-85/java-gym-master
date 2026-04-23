@@ -2,14 +2,14 @@ package ru.yandex.practicum.gym;
 
 import java.util.Objects;
 
-public class Coach {
+public class Coach implements Comparable<Coach>{
 
     //фамилия
-    private String surname;
+    private final String surname;
     //имя
-    private String name;
+    private final String name;
     //отчество
-    private String middleName;
+    private final String middleName;
 
     public Coach(String surname, String name, String middleName) {
         this.surname = surname;
@@ -41,4 +41,28 @@ public class Coach {
     public String getMiddleName() {
         return middleName;
     }
+
+    @Override
+    public String toString() {
+        return "Coach{" +
+                "surname='" + surname + '\'' +
+                ", name='" + name + '\'' +
+                ", middleName='" + middleName + '\'' +
+                '}';
+    }
+
+    @Override
+    public int compareTo(Coach o) {
+        int result = this.surname.compareTo(o.surname);
+
+        if (result == 0) {
+            result = this.name.compareTo(o.name);
+        }
+        if (result == 0) {
+            result = this.middleName.compareTo(o.middleName);
+        }
+        return result;
+
+    }
+
 }
