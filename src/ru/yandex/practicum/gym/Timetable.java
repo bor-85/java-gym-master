@@ -47,7 +47,7 @@ public class Timetable {
     }
 
     public List<TrainingSession> getTrainingSessionsForDay(DayOfWeek dayOfWeek) {
-        if (dayTrainingMap.get(dayOfWeek) == null){
+        if (dayTrainingMap.get(dayOfWeek) == null) {
             return Collections.emptyList();
         }
         return dayTrainingMap.get(dayOfWeek);//Сложность O(1)
@@ -67,7 +67,7 @@ public class Timetable {
     }
 
     public Map<Coach,Integer> getCountByCoaches() {
-        if (coachCountTrainings.isEmpty()){
+        if (coachCountTrainings.isEmpty()) {
             return Collections.emptyMap();
         }
         List<Map.Entry<Coach, Integer>> list = new ArrayList<>(coachCountTrainings.entrySet());
