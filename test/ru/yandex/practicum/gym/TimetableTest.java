@@ -97,8 +97,8 @@ public class TimetableTest {
         int expectedMondayCount13 = 1;
         int expectedMondayCount14 = 0;
 
-        int resultMondayCount13 = timetable.getTrainingSessionsForDayAndTime(DayOfWeek.MONDAY,new TimeOfDay(13,0)).size();
-        int resultMondayCount14 = timetable.getTrainingSessionsForDayAndTime(DayOfWeek.MONDAY,new TimeOfDay(14,0)).size();
+        int resultMondayCount13 = timetable.getTrainingSessionsForDayAndTime(DayOfWeek.MONDAY, new TimeOfDay(13, 0)).size();
+        int resultMondayCount14 = timetable.getTrainingSessionsForDayAndTime(DayOfWeek.MONDAY, new TimeOfDay(14, 0)).size();
         //Проверить, что за понедельник в 13:00 вернулось одно занятие
         Assertions.assertEquals(expectedMondayCount13, resultMondayCount13);
         //Проверить, что за понедельник в 14:00 не вернулось занятий

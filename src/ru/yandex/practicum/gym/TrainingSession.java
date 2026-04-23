@@ -1,6 +1,6 @@
 package ru.yandex.practicum.gym;
 
-public class TrainingSession implements Comparable<TrainingSession>{
+public class TrainingSession implements Comparable<TrainingSession> {
 
     //группа
     private final Group group;
