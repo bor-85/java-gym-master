@@ -2,7 +2,7 @@ package ru.yandex.practicum.gym;
 
 import java.util.Objects;
 
-public class Coach implements Comparable<Coach>{
+public class Coach implements Comparable<Coach> {
 
     //фамилия
     private final String surname;
