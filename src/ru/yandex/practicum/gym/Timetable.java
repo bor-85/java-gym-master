@@ -4,69 +4,56 @@ import java.util.*;
 
 public class Timetable {
 
-    private final Map<DayOfWeek,TreeMap<TimeOfDay,List<TrainingSession>>> timetable = new HashMap<>();
-    //отдельная коллекция под тренировки на каждый день недели
-    private final Map<DayOfWeek,List<TrainingSession>> dayTrainingMap = new HashMap<>();
+    private final Map<DayOfWeek, TreeMap<TimeOfDay, List<TrainingSession>>> timetable = new HashMap<>();
+    //отдельная коллекция под тренировки на каждый день недели, так как есть требование к сложности получения списка за день - O(1)
+    private final Map<DayOfWeek, List<TrainingSession>> dayTrainingMap = new HashMap<>();
     //Коллекция для хранения Тренеров и количества их тренировок в неделю
-    private final Map<Coach,Integer> coachCountTrainings = new HashMap<>();
+    private final Map<Coach, Integer> coachCountTrainings = new HashMap<>();
+
+    public Timetable() {
+        // Инициализация всех дней недели пустыми TreeMap
+        for (DayOfWeek day : DayOfWeek.values()) {
+            timetable.put(day, new TreeMap<>());
+        }
+        // Также можно инициализировать деньTrainingMap, если нужно
+        for (DayOfWeek day : DayOfWeek.values()) {
+            dayTrainingMap.put(day, new ArrayList<>());
+        }
+    }
 
     public void addNewTrainingSession(TrainingSession trainingSession) {
         DayOfWeek dayOfWeek = trainingSession.getDayOfWeek();
         TimeOfDay timeOfDay = trainingSession.getTimeOfDay();
         Coach coach = trainingSession.getCoach();
 
-        TreeMap<TimeOfDay,List<TrainingSession>> timeTrainings = timetable.get(dayOfWeek);
-        if (timeTrainings == null) {
-            timeTrainings = new TreeMap<>();
-            timetable.put(dayOfWeek, timeTrainings);
-        }
-
+        //Добавление тренировки в расписание
+        TreeMap<TimeOfDay, List<TrainingSession>> timeTrainings = timetable.get(dayOfWeek);
+        timeTrainings.putIfAbsent(timeOfDay, new ArrayList<>());
         List<TrainingSession> listTrainings = timeTrainings.get(timeOfDay);
-        if (listTrainings == null) {
-            listTrainings = new ArrayList<>();
-            timeTrainings.put(timeOfDay, listTrainings);
-        }
         listTrainings.add(trainingSession);
 
         //заполняем коллекцию - список тренировок на день недели
-        List<TrainingSession>  listTrainingsByDay = dayTrainingMap.get(dayOfWeek);
-        if (listTrainingsByDay == null) {
-            listTrainingsByDay = new ArrayList<>();
-            dayTrainingMap.put(dayOfWeek, listTrainingsByDay);
-        }
+        List<TrainingSession> listTrainingsByDay = dayTrainingMap.get(dayOfWeek);
         listTrainingsByDay.add(trainingSession);
         Collections.sort(listTrainingsByDay);
 
         //заполняем коллекцию с тренером и его количеством тренировок
-        if (coachCountTrainings.containsKey(coach)) {
-            int countTraings = coachCountTrainings.get(coach);
-            coachCountTrainings.put(coach, countTraings + 1);
-        } else {
-            coachCountTrainings.put(coach, 1);
-        }
+        coachCountTrainings.compute(coach, (k, v) -> (v == null) ? 1 : v + 1);
+
     }
 
     public List<TrainingSession> getTrainingSessionsForDay(DayOfWeek dayOfWeek) {
-        if (dayTrainingMap.get(dayOfWeek) == null) {
-            return Collections.emptyList();
-        }
-        return dayTrainingMap.get(dayOfWeek);//Сложность O(1)
+
+        return dayTrainingMap.getOrDefault(dayOfWeek, Collections.emptyList());
     }
 
     public List<TrainingSession> getTrainingSessionsForDayAndTime(DayOfWeek dayOfWeek, TimeOfDay timeOfDay) {
-        TreeMap<TimeOfDay, List<TrainingSession>> timeTrainings = timetable.get(dayOfWeek);
-        if (timeTrainings == null) {
-            return Collections.emptyList();
-        }
-        List<TrainingSession> listTrainings = timeTrainings.get(timeOfDay);
-        if (listTrainings == null) {
-            return Collections.emptyList();
-        }
+        TreeMap<TimeOfDay, List<TrainingSession>> timeTrainings = timetable.getOrDefault(dayOfWeek, new TreeMap<>());
 
-        return listTrainings;
+        return timeTrainings.getOrDefault(timeOfDay, Collections.emptyList());
     }
 
-    public Map<Coach,Integer> getCountByCoaches() {
+    public Map<Coach, Integer> getCountByCoaches() {
         if (coachCountTrainings.isEmpty()) {
             return Collections.emptyMap();
         }

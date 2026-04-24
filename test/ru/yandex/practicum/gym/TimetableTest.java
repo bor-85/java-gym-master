@@ -105,6 +105,31 @@ public class TimetableTest {
         Assertions.assertEquals(expectedMondayCount14, resultMondayCount14);
     }
 
+    //Проверка работы метода, если 2 тренировки в одно время
+    @Test
+    void testGetTrainingSessionsForDayAndTimeSameTime() {
+        Timetable timetable = new Timetable();
+
+        Group group = new Group("Акробатика для детей", Age.CHILD, 60);
+        Coach coach = new Coach("Васильев", "Николай", "Сергеевич");
+        Coach coach2 = new Coach("Попенко", "Иван", "Сергеевич");
+        TrainingSession singleTrainingSession = new TrainingSession(group, coach,
+                DayOfWeek.MONDAY, new TimeOfDay(13, 0));
+        TrainingSession secondTrainingSession = new TrainingSession(group, coach2,
+                DayOfWeek.MONDAY, new TimeOfDay(13, 0));
+
+        timetable.addNewTrainingSession(singleTrainingSession);
+        timetable.addNewTrainingSession(secondTrainingSession);
+
+        int expectedMondayCount13 = 2;
+
+        int resultMondayCount13 = timetable.getTrainingSessionsForDayAndTime(DayOfWeek.MONDAY, new TimeOfDay(13, 0)).size();
+
+        //Проверить, что за понедельник в 13:00 вернулось два занятия
+        Assertions.assertEquals(expectedMondayCount13, resultMondayCount13);
+
+    }
+
     //Проверка работы метода на пустом расписании
     @Test
     void testGetCountByCoachesIsEmptyTimetable() {
