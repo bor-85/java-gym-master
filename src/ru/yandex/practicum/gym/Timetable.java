@@ -5,8 +5,7 @@ import java.util.*;
 public class Timetable {
 
     private final Map<DayOfWeek, TreeMap<TimeOfDay, List<TrainingSession>>> timetable = new HashMap<>();
-    //отдельная коллекция под тренировки на каждый день недели, так как есть требование к сложности получения списка за день - O(1)
-    private final Map<DayOfWeek, List<TrainingSession>> dayTrainingMap = new HashMap<>();
+
     //Коллекция для хранения Тренеров и количества их тренировок в неделю
     private final Map<Coach, Integer> coachCountTrainings = new HashMap<>();
 
@@ -14,10 +13,6 @@ public class Timetable {
         // Инициализация всех дней недели пустыми TreeMap
         for (DayOfWeek day : DayOfWeek.values()) {
             timetable.put(day, new TreeMap<>());
-        }
-        // Также можно инициализировать деньTrainingMap, если нужно
-        for (DayOfWeek day : DayOfWeek.values()) {
-            dayTrainingMap.put(day, new ArrayList<>());
         }
     }
 
@@ -32,19 +27,27 @@ public class Timetable {
         List<TrainingSession> listTrainings = timeTrainings.get(timeOfDay);
         listTrainings.add(trainingSession);
 
-        //заполняем коллекцию - список тренировок на день недели
-        List<TrainingSession> listTrainingsByDay = dayTrainingMap.get(dayOfWeek);
-        listTrainingsByDay.add(trainingSession);
-        Collections.sort(listTrainingsByDay);
-
         //заполняем коллекцию с тренером и его количеством тренировок
         coachCountTrainings.compute(coach, (k, v) -> (v == null) ? 1 : v + 1);
 
     }
 
-    public List<TrainingSession> getTrainingSessionsForDay(DayOfWeek dayOfWeek) {
+    public Collection<List<TrainingSession>> getTrainingSessionsForDay(DayOfWeek dayOfWeek) {
 
-        return dayTrainingMap.getOrDefault(dayOfWeek, Collections.emptyList());
+        return timetable.getOrDefault(dayOfWeek, new TreeMap<>()).values();
+
+    }
+
+    //добавил отдельный метод на подсчет количества сессий для прохождения тестов
+    public int getCountTrainingSessionsForDay(DayOfWeek dayOfWeek) {
+
+        Collection<List<TrainingSession>> trainingsCollection = getTrainingSessionsForDay(dayOfWeek);
+        int count = 0;
+        for (List<TrainingSession> trainingList : trainingsCollection) {
+            count += trainingList.size();
+        }
+        return count;
+
     }
 
     public List<TrainingSession> getTrainingSessionsForDayAndTime(DayOfWeek dayOfWeek, TimeOfDay timeOfDay) {

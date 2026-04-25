@@ -7,6 +7,58 @@ import java.util.*;
 
 public class TimetableTest {
 
+    //Тест нового метода, который считает количество тренировок за день
+    @Test
+    void testGetCountTrainingSessionsForDay() {
+        Timetable timetable = new Timetable();
+
+        Group group = new Group("Акробатика для детей", Age.CHILD, 60);
+        Coach coach = new Coach("Васильев", "Николай", "Сергеевич");
+        TrainingSession singleTrainingSession = new TrainingSession(group, coach,
+                DayOfWeek.MONDAY, new TimeOfDay(13, 0));
+        TrainingSession secondTrainingSession = new TrainingSession(group, coach,
+                DayOfWeek.MONDAY, new TimeOfDay(10, 0));
+        TrainingSession thirdTrainingSession = new TrainingSession(group, coach,
+                DayOfWeek.TUESDAY, new TimeOfDay(10, 0));
+
+        timetable.addNewTrainingSession(singleTrainingSession);
+        timetable.addNewTrainingSession(singleTrainingSession);
+        timetable.addNewTrainingSession(secondTrainingSession);
+        timetable.addNewTrainingSession(thirdTrainingSession);
+
+        int expectedMondayCount = 3;
+        int expectedTuesdayCount = 1;
+        int expectedSundayCount = 0;
+
+        int resultMondayCount = timetable.getCountTrainingSessionsForDay(DayOfWeek.MONDAY);
+        int resultTuesdayCount = timetable.getCountTrainingSessionsForDay(DayOfWeek.TUESDAY);
+        int resultSundayCount = timetable.getCountTrainingSessionsForDay(DayOfWeek.SUNDAY);
+
+        //Проверить, что за понедельник вернулось 3
+        Assertions.assertEquals(expectedMondayCount, resultMondayCount);
+
+        //Проверить, что за вторник вернулось 1
+        Assertions.assertEquals(expectedTuesdayCount, resultTuesdayCount);
+
+        //Проверить, что за воскресениье вернулось 0
+        Assertions.assertEquals(expectedSundayCount, resultSundayCount);
+
+    }
+
+    //Проверка нового метода на пустом расписании
+    @Test
+    void testGetCountTrainingSessionsForDayEmptyTimetable() {
+        Timetable emptyTimetable = new Timetable();
+
+        int expectedEmptyTimetableCount = 0;
+
+        int resultEmptyTimetableCount = emptyTimetable.getCountTrainingSessionsForDay(DayOfWeek.SUNDAY);
+
+        //Проверить, что для timetable, в который не добавлены тренировки, за воскресениье вернулось 0
+        Assertions.assertEquals(expectedEmptyTimetableCount, resultEmptyTimetableCount);
+
+    }
+
     @Test
     void testGetTrainingSessionsForDaySingleSession() {
         Timetable timetable = new Timetable();
@@ -21,8 +73,8 @@ public class TimetableTest {
         int expectedMondayCount = 1;
         int expectedTuesdayCount = 0;
 
-        int resultMondayCount = timetable.getTrainingSessionsForDay(DayOfWeek.MONDAY).size();
-        int resultTuesdayCount = timetable.getTrainingSessionsForDay(DayOfWeek.TUESDAY).size();
+        int resultMondayCount = timetable.getCountTrainingSessionsForDay(DayOfWeek.MONDAY);
+        int resultTuesdayCount = timetable.getCountTrainingSessionsForDay(DayOfWeek.TUESDAY);
 
         //Проверить, что за понедельник вернулось одно занятие
         Assertions.assertEquals(expectedMondayCount, resultMondayCount);
@@ -54,24 +106,27 @@ public class TimetableTest {
         timetable.addNewTrainingSession(mondayChildTrainingSession);
         timetable.addNewTrainingSession(thursdayChildTrainingSession);
         timetable.addNewTrainingSession(saturdayChildTrainingSession);
-        List<TrainingSession> thursdayTrainingSession = timetable.getTrainingSessionsForDay(DayOfWeek.THURSDAY);
+
+        Iterator<List<TrainingSession>> iterator = timetable.getTrainingSessionsForDay(DayOfWeek.THURSDAY).iterator();
+        List<TrainingSession> thursdayTrainingSession1 = iterator.next();
+        List<TrainingSession> thursdayTrainingSession2 = iterator.next();
 
         //подготовка к тесту понедельник
         int expectedMondayCount = 1;
-        int resultMondayCount = timetable.getTrainingSessionsForDay(DayOfWeek.MONDAY).size();
+        int resultMondayCount = timetable.getCountTrainingSessionsForDay(DayOfWeek.MONDAY);
 
         //подготовка к тесту вторник
         int expectedTuesdayCount = 0;
-        int resultTuesdayCount = timetable.getTrainingSessionsForDay(DayOfWeek.TUESDAY).size();
+        int resultTuesdayCount = timetable.getCountTrainingSessionsForDay(DayOfWeek.TUESDAY);
 
         //подготовка к тесту четверг
         int expectedThursdayCount = 2;
         int expectedThursdayHours1 = 13;
         int expectedThursdayHours2 = 20;
 
-        int resultThursdayCount = thursdayTrainingSession.size();
-        int resultThursdayHours1 = thursdayTrainingSession.getFirst().getTimeOfDay().getHours();
-        int resultThursdayHours2 = thursdayTrainingSession.getLast().getTimeOfDay().getHours();
+        int resultThursdayCount = timetable.getCountTrainingSessionsForDay(DayOfWeek.THURSDAY);
+        int resultThursdayHours1 = thursdayTrainingSession1.getFirst().getTimeOfDay().getHours();
+        int resultThursdayHours2 = thursdayTrainingSession2.getFirst().getTimeOfDay().getHours();
 
         // Проверить, что за понедельник вернулось одно занятие
         Assertions.assertEquals(expectedMondayCount, resultMondayCount);
